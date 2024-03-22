@@ -39,7 +39,7 @@
             const locationOccurred = document.getElementById("locationOccurred").value;
             const licensePlate = document.getElementById("licensePlate").value;
             
-            fetch('http://localhost:8080/api/citations', {
+            fetch('https://thawing-bayou-15449-25148cb91854.herokuapp.com/api/citations', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -62,7 +62,7 @@
         });
 
         function fetchCitations() {
-            fetch('http://localhost:8080/api/citations')
+            fetch('https://thawing-bayou-15449-25148cb91854.herokuapp.com/api/citations')
                 .then(response => response.json())
                 .then(data => {
                     const listDiv = document.getElementById("list");
