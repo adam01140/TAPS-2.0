@@ -2,11 +2,14 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 8080;
+const path = require('path');
 
 // Middleware
 app.use(cors());
 app.use(express.json()); // for parsing application/json
 
+// Serve static files from the 'public' directory
+app.use(express.static('public'));
 
 // In-memory storage for citations
 let citations = [];
