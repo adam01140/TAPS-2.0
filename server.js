@@ -7,6 +7,19 @@ const PORT = process.env.PORT || 8080;
 app.use(cors());
 app.use(express.json()); // for parsing application/json
 
+// Serve static files from the 'public' directory
+app.use(express.static('public'));
+
+// Send index.html for any other request
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
+
+
 // In-memory storage for citations
 let citations = [];
 
@@ -44,3 +57,7 @@ app.use((req, res) => {
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
+
+
+
+
