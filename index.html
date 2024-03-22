@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Citation Reporter</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { margin-bottom: 20px; }
+        label { display: block; margin-top: 10px; }
+        input, button { margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <div id="report" class="container">
+        <h2>Report a Citation</h2>
+        <label for="citationNumber">Citation Number:</label>
+        <input type="text" id="citationNumber" required>
+        
+        <label for="timeOccurred">Time Occurred:</label>
+        <input type="datetime-local" id="timeOccurred" required>
+        
+        <label for="locationOccurred">Location Occurred:</label>
+        <input type="text" id="locationOccurred" required>
+        
+        <label for="licensePlate">License Plate Number:</label>
+        <input type="text" id="licensePlate" required>
+        
+        <button id="submitCitation">Report a Citation</button>
+    </div>
+    <div id="list" class="container">
+        <h2>Citation List</h2>
+    </div>
+
+    <script>
+        document.getElementById("submitCitation").addEventListener("click", function() {
+            const citationNumber = document.getElementById("citationNumber").value;
+            const timeOccurred = document.getElementById("timeOccurred").value;
+            const locationOccurred = document.getElementById("locationOccurred").value;
+            const licensePlate = document.getElementById("licensePlate").value;
+            
+            fetch('http://localhost:8080/api/citations', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    citationNumber,
+                    timeOccurred,
+                    locationOccurred,
+                    licensePlate,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                fetchCitations(); // Refresh the list after submitting
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+
+        function fetchCitations() {
+            fetch('http://localhost:8080/api/citations')
+                .then(response => response.json())
+                .then(data => {
+                    const listDiv = document.getElementById("list");
+                    listDiv.innerHTML = "<h2>Citation List</h2>"; // Clear current list and add header again
+                    data.forEach(citation => {
+                        const citationElement = document.createElement("div");
+                        citationElement.innerHTML = `<p><strong>Citation Number:</strong> ${citation.citationNumber}<br>
+                                                      <strong>Time:</strong> ${citation.timeOccurred}<br>
+                                                      <strong>Location:</strong> ${citation.locationOccurred}<br>
+                                                      <strong>License Plate:</strong> ${citation.licensePlate}</p>`;
+                        listDiv.appendChild(citationElement);
+                    });
+                })
+                .catch((error) => console.error('Error:', error));
+        }
+
+        // Initially fetch citations to populate the list
+        fetchCitations();
+    </script>
+</body>
+</html>
