@@ -3,49 +3,42 @@ const cors = require('cors');
 const path = require('path');
 const app = express();
 
-// Use the environment variable PORT, or 8080 if there's nothing there.
 const PORT = process.env.PORT || 8080;
 
-// Enable CORS for all routes
 app.use(cors());
-
-// Use express.json() middleware for parsing JSON in request bodies
 app.use(express.json());
+app.use(express.static(path.join(__dirname))); // Serve static files
 
-// Serve static files (e.g., index.html, CSS, JavaScript, images, etc.)
-// directly from the root directory since there is no 'public' folder
-app.use(express.static(path.join(__dirname)));
+let citations = []; // In-memory storage for citations
 
-// In-memory array to store citation records
-let citations = [];
-
-// POST endpoint to receive and add a new citation
+// POST endpoint to add a citation
 app.post('/api/citations', (req, res) => {
     const { citationNumber, timeOccurred, locationOccurred, licensePlate } = req.body;
-    
-    // Check for missing fields in the request body
     if (!citationNumber || !timeOccurred || !locationOccurred || !licensePlate) {
         return res.status(400).send('Missing fields in request body');
     }
-    
-    // Create a new citation object
     const newCitation = { citationNumber, timeOccurred, locationOccurred, licensePlate };
-    
-    // Add the new citation to the array
-    citations.push(newCitation);
-    
-    // Respond with the added citation and a 201 Created status code
+    citations.push(newCitation); // Add the new citation
     res.status(201).json(newCitation);
 });
 
-// GET endpoint to return all citations, sorted from oldest to newest
+// GET endpoint to fetch all citations
 app.get('/api/citations', (req, res) => {
-    // Reverse the citations array to display from oldest to newest
-    res.json([...citations].reverse());
+    res.json([...citations].reverse()); // Return citations from oldest to newest
 });
 
-// If no other route matches, serve index.html for any other GET request
-// This is useful for single-page applications
+// DELETE endpoint to remove a citation by its citation number
+app.delete('/api/citations/:citationNumber', (req, res) => {
+    const citationNumber = req.params.citationNumber;
+    const index = citations.findIndex(c => c.citationNumber === citationNumber);
+    if (index === -1) {
+        return res.status(404).send('Citation not found');
+    }
+    citations.splice(index, 1); // Remove the citation
+    res.status(200).send('Citation deleted successfully');
+});
+
+// Serve index.html for any other GET request
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
