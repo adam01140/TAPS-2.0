@@ -33,6 +33,14 @@
     </div>
 
     <script>
+	
+	
+	<script>
+
+
+
+
+
         document.getElementById("submitCitation").addEventListener("click", function() {
             const citationNumber = document.getElementById("citationNumber").value;
             const timeOccurred = document.getElementById("timeOccurred").value;
@@ -81,6 +89,9 @@
 
         // Initially fetch citations to populate the list
         fetchCitations();
+		
+		
+		setInterval(fetchCitations, 30000);
     </script>
 </body>
 </html>
