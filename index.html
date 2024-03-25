@@ -36,6 +36,34 @@
 
 
 
+	document.addEventListener('DOMContentLoaded', function() {
+    var password = prompt("Please enter the password to view license plate data:");
+    if (password !== null) {
+        // Send the password to the server to verify
+        verifyPassword(password);
+    }
+});
+
+function verifyPassword(password) {
+    fetch('https://thawing-bayou-15449-25148cb91854.herokuapp.com/api/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.accessGranted) {
+            fetchCitations(); // Only fetch if password is correct
+        } else {
+            alert('Access denied. Incorrect password.');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+// Rest of your code to fetch and display citations goes here
+
+
         document.getElementById("submitCitation").addEventListener("click", function() {
             const citationNumber = document.getElementById("citationNumber").value;
             const timeOccurred = document.getElementById("timeOccurred").value;

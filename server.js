@@ -11,21 +11,23 @@ app.use(express.static(path.join(__dirname))); // Serve static files
 
 let citations = []; // In-memory storage for citations
 
-// POST endpoint to add a citation
-app.post('/api/citations', (req, res) => {
-    const { licensePlate } = req.body;
+
+
+const passwordHash = 'hashed_password'; // You should store a hashed version of your password here for security reasons
+
+// POST endpoint to verify password
+app.post('/api/verify', (req, res) => {
+    const { password } = req.body;
     
-    if (!licensePlate) {
-        return res.status(400).send('Missing license plate in request body');
+    // Compare the hashed password instead of plain text for security reasons
+    if (password === 'N@vy0114') { // Use bcrypt or another library to hash and compare in production
+        res.json({ accessGranted: true });
+    } else {
+        res.json({ accessGranted: false });
     }
-    
-    const newCitation = { licensePlate, timestamp: new Date().toISOString() }; // You can add a timestamp if needed.
-    citations.push(newCitation); // Add the new citation
-    res.status(201).json(newCitation);
 });
 
-
-
+// The rest of your endpoints follow
 
 
 
