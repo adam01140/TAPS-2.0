@@ -65,22 +65,21 @@
         });
 
         function fetchCitations() {
-            fetch('https://thawing-bayou-15449-25148cb91854.herokuapp.com/api/citations')
-                .then(response => response.json())
-                .then(data => {
-                    const listDiv = document.getElementById("list");
-                    listDiv.innerHTML = "<h2>Citation List</h2>"; // Clear current list and add header again
-                    data.forEach(citation => {
-                        const citationElement = document.createElement("div");
-                        citationElement.innerHTML = `<p><strong>Citation Number:</strong> ${citation.citationNumber}<br>
-                                                      <strong>Time:</strong> ${citation.timeOccurred}<br>
-                                                      <strong>Location:</strong> ${citation.locationOccurred}<br>
-                                                      <strong>License Plate:</strong> ${citation.licensePlate}</p>`;
-                        listDiv.appendChild(citationElement);
-                    });
-                })
-                .catch((error) => console.error('Error:', error));
-        }
+    fetch('https://thawing-bayou-15449-25148cb91854.herokuapp.com/api/citations')
+        .then(response => response.json())
+        .then(data => {
+            const listDiv = document.getElementById("list");
+            listDiv.innerHTML = "<h2>Citation List</h2>"; // Clear current list and add header again
+            
+            data.forEach(citation => {
+                const p = document.createElement("p");
+                p.textContent = `License Plate: ${citation.licensePlate}`;
+                listDiv.appendChild(p);
+            });
+        })
+        .catch((error) => console.error('Error:', error));
+}
+
 
         // Initially fetch citations to populate the list
         fetchCitations();
