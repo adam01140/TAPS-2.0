@@ -36,30 +36,6 @@
 
 
 
-	document.addEventListener('DOMContentLoaded', function() {
-    var password = prompt("Please enter the password to view license plate data:");
-    if (password !== null) {
-        // Send the password to the server to verify
-        verifyPassword(password);
-    }
-});
-
-function verifyPassword(password) {
-    fetch('https://thawing-bayou-15449-25148cb91854.herokuapp.com/api/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.accessGranted) {
-            fetchCitations(); // Only fetch if password is correct
-        } else {
-            alert('Access denied. Incorrect password.');
-        }
-    })
-    .catch(error => console.error('Error:', error));
-}
 
 // Rest of your code to fetch and display citations goes here
 
@@ -92,7 +68,7 @@ function verifyPassword(password) {
             });
         });
 
-        function fetchCitations() {
+       function fetchCitations() {
     fetch('https://thawing-bayou-15449-25148cb91854.herokuapp.com/api/citations')
         .then(response => response.json())
         .then(data => {
@@ -107,6 +83,30 @@ function verifyPassword(password) {
         })
         .catch((error) => console.error('Error:', error));
 }
+
+function verifyPassword(password) {
+    fetch('https://thawing-bayou-15449-25148cb91854.herokuapp.com/api/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.accessGranted) {
+            fetchCitations(); // Only fetch and show citations if password is correct
+        } else {
+            alert('Access denied. Incorrect password.');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var password = prompt("Please enter the password to view license plate data:");
+    if (password) {
+        verifyPassword(password);
+    }
+});
 
 
         // Initially fetch citations to populate the list
