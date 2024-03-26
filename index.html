@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Citation Reporter</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { margin-bottom: 20px; }
+        label { display: block; margin-top: 10px; }
+        input, button { margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <div id="report" class="container">
+        <h2>Report a Citation</h2>
+        <label for="citationNumber">Citation Number:</label>
+        <input type="text" id="citationNumber" required>
+        
+        <label for="timeOccurred">Time Occurred:</label>
+        <input type="datetime-local" id="timeOccurred" required>
+        
+        <label for="locationOccurred">Location Occurred:</label>
+        <input type="text" id="locationOccurred" required>
+        
+        <label for="licensePlate">License Plate Number:</label>
+        <input type="text" id="licensePlate" required>
+        
+        <button id="submitCitation">Report a Citation</button>
+        <button id="fetchCitations">Fetch Citations</button> <!-- Added a button for fetching citations -->
+    </div>
+    <div id="list" class="container">
+        <h2>Citation List</h2>
+    </div>
+
+    <script>
+        document.getElementById("submitCitation").addEventListener("click", function() {
+            const citationNumber = document.getElementById("citationNumber").value;
+            const timeOccurred = document.getElementById("timeOccurred").value;
+            const locationOccurred = document.getElementById("locationOccurred").value;
+            const licensePlate = document.getElementById("licensePlate").value;
+            
+            fetch('https://thawing-bayou-15449-25148cb91854.herokuapp.com/api/citations', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    citationNumber,
+                    timeOccurred,
+                    locationOccurred,
+                    licensePlate,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+
+        document.getElementById("fetchCitations").addEventListener("click", function() {
+            const password = prompt("Please enter the password:");
+            fetch(`https://thawing-bayou-15449-25148cb91854.herokuapp.com/api/citations?password=${encodeURIComponent(password)}`, {
+                method: 'GET',
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Unauthorized access or error fetching data.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const listDiv = document.getElementById("list");
+                listDiv.innerHTML = "<h2>Citation List</h2>";
+                data.forEach(citation => {
+                    const p = document.createElement("p");
+                    p.textContent = `License Plate: ${citation.licensePlate}`;
+                    listDiv.appendChild(p);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Unauthorized access or error fetching data.');
+            });
+        });
+    </script>
+</body>
+</html>
