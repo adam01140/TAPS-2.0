@@ -33,9 +33,6 @@
     </div>
 
     <script>
-
-
-
         document.getElementById("submitCitation").addEventListener("click", function() {
             const citationNumber = document.getElementById("citationNumber").value;
             const timeOccurred = document.getElementById("timeOccurred").value;
@@ -65,27 +62,31 @@
         });
 
         function fetchCitations() {
-    fetch('https://thawing-bayou-15449-25148cb91854.herokuapp.com/api/citations')
-        .then(response => response.json())
-        .then(data => {
-            const listDiv = document.getElementById("list");
-            listDiv.innerHTML = "<h2>Citation List</h2>"; // Clear current list and add header again
-            
-            data.forEach(citation => {
-                const p = document.createElement("p");
-                p.textContent = `License Plate: ${citation.licensePlate}`;
-                listDiv.appendChild(p);
+            const password = prompt("Please enter the password:");
+            fetch('https://thawing-bayou-15449-25148cb91854.herokuapp.com/api/citations', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    password // Send the password to the server
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                const listDiv = document.getElementById("list");
+                listDiv.innerHTML = "<h2>Citation List</h2>";
+                data.forEach(citation => {
+                    const p = document.createElement("p");
+                    p.textContent = `License Plate: ${citation.licensePlate}`;
+                    listDiv.appendChild(p);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Unauthorized access or error fetching data.');
             });
-        })
-        .catch((error) => console.error('Error:', error));
-}
-
-
-        // Initially fetch citations to populate the list
-        fetchCitations();
-		
-		
-		setInterval(fetchCitations, 30000);
+        }
     </script>
 </body>
 </html>
