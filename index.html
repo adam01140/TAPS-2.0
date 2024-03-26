@@ -12,7 +12,9 @@
     </style>
 </head>
 <body>
-    <div id="report" class="container">
+
+
+    <div id="report" class="container" style="display:none">
         <h2>Report a Citation</h2>
         <label for="citationNumber">Citation Number:</label>
         <input type="text" id="citationNumber" required>
@@ -74,10 +76,10 @@
             })
             .then(data => {
                 const listDiv = document.getElementById("list");
-                listDiv.innerHTML = "<h2>Citation List</h2>";
+                listDiv.innerHTML = "<h2>License Plates:</h2>";
                 data.forEach(citation => {
                     const p = document.createElement("p");
-                    p.textContent = `License Plate: ${citation.licensePlate}`;
+                    p.textContent = `${citation.licensePlate}`;
                     listDiv.appendChild(p);
                 });
             })
