@@ -11,41 +11,21 @@ app.use(express.static(path.join(__dirname))); // Serve static files
 
 let citations = []; // In-memory storage for citations
 
-
-
-const passwordHash = 'hashed_password'; // You should store a hashed version of your password here for security reasons
-
-let isAuthenticated = false;
-
-// POST endpoint to verify password
-app.post('/api/verify', (req, res) => {
-    const { password } = req.body;
-    
-    if (password === 'N@vy0114') {
-        isAuthenticated = true;
-        res.json({ accessGranted: true });
-    } else {
-        isAuthenticated = false;
-        res.json({ accessGranted: false });
+// POST endpoint to add a citation
+app.post('/api/citations', (req, res) => {
+    const { citationNumber, timeOccurred, locationOccurred, licensePlate } = req.body;
+    if (!citationNumber || !timeOccurred || !locationOccurred || !licensePlate) {
+        return res.status(400).send('Missing fields in request body');
     }
+    const newCitation = { citationNumber, timeOccurred, locationOccurred, licensePlate };
+    citations.push(newCitation); // Add the new citation
+    res.status(201).json(newCitation);
 });
 
 // GET endpoint to fetch all citations
 app.get('/api/citations', (req, res) => {
-    if (!isAuthenticated) {
-        return res.status(403).json({ error: "Unauthorized access!" });
-    }
-    
     res.json([...citations].reverse()); // Return citations from oldest to newest
 });
-
-/*
-// GET endpoint to fetch all citations
-app.get('/api/citations', (req, res) => {
-    res.json([...citations].reverse()); // Return citations from oldest to newest
-});
-*/
-
 
 // DELETE endpoint to remove a citation by its citation number
 app.delete('/api/citations/:citationNumber', (req, res) => {
