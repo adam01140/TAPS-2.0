@@ -68,9 +68,15 @@
             });
         });
 
-       function fetchCitations() {
+function fetchCitations() {
     fetch('https://thawing-bayou-15449-25148cb91854.herokuapp.com/api/citations')
-        .then(response => response.json())
+        .then(response => {
+            if(response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Could not fetch citations.');
+            }
+        })
         .then(data => {
             const listDiv = document.getElementById("list");
             listDiv.innerHTML = "<h2>Citation List</h2>"; // Clear current list and add header again
@@ -81,7 +87,10 @@
                 listDiv.appendChild(p);
             });
         })
-        .catch((error) => console.error('Error:', error));
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('You do not have permission to view the data.');
+        });
 }
 
 function verifyPassword(password) {

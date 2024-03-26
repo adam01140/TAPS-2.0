@@ -15,26 +15,37 @@ let citations = []; // In-memory storage for citations
 
 const passwordHash = 'hashed_password'; // You should store a hashed version of your password here for security reasons
 
+let isAuthenticated = false;
+
 // POST endpoint to verify password
 app.post('/api/verify', (req, res) => {
     const { password } = req.body;
     
-    // Compare the hashed password instead of plain text for security reasons
-    if (password === 'N@vy0114') { // Use bcrypt or another library to hash and compare in production
+    if (password === 'N@vy0114') {
+        isAuthenticated = true;
         res.json({ accessGranted: true });
     } else {
+        isAuthenticated = false;
         res.json({ accessGranted: false });
     }
 });
 
-// The rest of your endpoints follow
+// GET endpoint to fetch all citations
+app.get('/api/citations', (req, res) => {
+    if (!isAuthenticated) {
+        return res.status(403).json({ error: "Unauthorized access!" });
+    }
+    
+    res.json([...citations].reverse()); // Return citations from oldest to newest
+});
 
-
-
+/*
 // GET endpoint to fetch all citations
 app.get('/api/citations', (req, res) => {
     res.json([...citations].reverse()); // Return citations from oldest to newest
 });
+*/
+
 
 // DELETE endpoint to remove a citation by its citation number
 app.delete('/api/citations/:citationNumber', (req, res) => {
