@@ -19,28 +19,34 @@ app.post('/api/citations', (req, res) => {
         return res.status(400).send('Missing license plate in request body');
     }
     
-    const newCitation = { licensePlate, timestamp: new Date().toISOString() }; // You can add a timestamp if needed.
+    const newCitation = { licensePlate, timestamp: new Date().toISOString() };
     citations.push(newCitation); // Add the new citation
     res.status(201).json(newCitation);
 });
 
-
-
-
-
-
 // GET endpoint to fetch all citations
 app.get('/api/citations', (req, res) => {
-    res.json([...citations].reverse()); // Return citations from oldest to newest
+    const { password } = req.query; // Expect password to be sent as a query parameter
+    
+    // Check if the password is correct
+    if (password !== 'N@vy0114') {
+        // If the password is incorrect, respond with an unauthorized status code and message
+        return res.status(401).json({ message: 'Unauthorized: Incorrect password' });
+    }
+    
+    // If the password is correct, send back the citations
+    res.json([...citations].reverse()); // Return citations from newest to oldest
 });
 
 // DELETE endpoint to remove a citation by its citation number
 app.delete('/api/citations/:citationNumber', (req, res) => {
     const citationNumber = req.params.citationNumber;
     const index = citations.findIndex(c => c.citationNumber === citationNumber);
+    
     if (index === -1) {
         return res.status(404).send('Citation not found');
     }
+    
     citations.splice(index, 1); // Remove the citation
     res.status(200).send('Citation deleted successfully');
 });
