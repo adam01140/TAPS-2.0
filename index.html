@@ -65,6 +65,18 @@
         });
 
         document.getElementById("fetchCitations").addEventListener("click", function() {
+		
+		
+		
+		const listDiv = document.getElementById("list");
+                listDiv.innerHTML = "<h2>License Plates:</h2>";
+                data.forEach(citation => {
+                    const p = document.createElement("p");
+                    p.textContent = `${citation.licensePlate}`;
+                    listDiv.appendChild(p);
+                });
+				
+				
             const password = prompt("Please enter the password:");
             fetch(`https://thawing-bayou-15449-25148cb91854.herokuapp.com/api/citations?password=${encodeURIComponent(password)}`, {
                 method: 'GET',
