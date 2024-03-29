@@ -9,18 +9,20 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname))); // Serve static files
 
-let citations = []; // In-memory storage for citations
 
-// POST endpoint to add a citation
+let citations = [];
+
+// Adjust the POST endpoint to accept complete citation details
 app.post('/api/citations', (req, res) => {
-    const { licensePlate } = req.body;
-    
-    if (!licensePlate) {
-        return res.status(400).send('Missing license plate in request body');
-    }
-    
-    const newCitation = { licensePlate, timestamp: new Date().toISOString() };
-    citations.push(newCitation); // Add the new citation
+    const { citationNumber, timeOccurred, locationOccurred, licensePlate } = req.body;
+    const newCitation = {
+        citationNumber: citationNumber || "Unavailable",
+        timeOccurred: timeOccurred || "Unavailable",
+        locationOccurred: locationOccurred || "Unavailable",
+        licensePlate: licensePlate || "Unavailable",
+        timestamp: new Date().toISOString()
+    };
+    citations.push(newCitation);
     res.status(201).json(newCitation);
 });
 
