@@ -11,19 +11,6 @@ app.use(express.static(path.join(__dirname))); // Serve static files
 
 let citations = []; // In-memory storage for citations
 
-// POST endpoint to add a citation
-app.post('/api/citations', (req, res) => {
-    const { licensePlate } = req.body;
-    
-    if (!licensePlate) {
-        return res.status(400).send('Missing license plate in request body');
-    }
-    
-    const newCitation = { licensePlate, timestamp: new Date().toISOString() };
-    citations.push(newCitation); // Add the new citation
-    res.status(201).json(newCitation);
-});
-
 
 
 
