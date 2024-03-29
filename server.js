@@ -24,6 +24,32 @@ app.post('/api/citations', (req, res) => {
     res.status(201).json(newCitation);
 });
 
+
+
+
+
+// POST endpoint to add a citation
+app.post('/api/citations', (req, res) => {
+    const { citationNumber, timeOccurred, locationOccurred, licensePlate } = req.body;
+    
+    // Basic validation
+    if (!licensePlate || !citationNumber || !timeOccurred || !locationOccurred) {
+        return res.status(400).send('Missing required citation details in request body');
+    }
+    
+    const newCitation = { 
+        citationNumber, 
+        timeOccurred, 
+        locationOccurred, 
+        licensePlate, 
+        timestamp: new Date().toISOString() 
+    };
+    citations.push(newCitation); // Add the new citation
+    res.status(201).json(newCitation);
+});
+
+
+
 // GET endpoint to fetch all citations
 app.get('/api/citations', (req, res) => {
     const { password } = req.query; // Expect password to be sent as a query parameter
