@@ -42,7 +42,7 @@ app.get('/api/citations', (req, res) => {
     const { password } = req.query; // Expect password to be sent as a query parameter
     
     // Check if the password is correct
-    if (password !== 'N@vy0114') {
+    if (password !== 'q') {
         // If the password is incorrect, respond with an unauthorized status code and message
         return res.status(401).json({ message: 'Unauthorized: Incorrect password' });
     }
