@@ -93,45 +93,6 @@
                 alert('Unauthorized access or error fetching data.');
             });
         });
-		
-		
-		
-		
-		 document.getElementById("fetchCitations").addEventListener("click", function() {
-            const password = prompt("Please enter the password:");
-            fetch(`https://thawing-bayou-15449-25148cb91854.herokuapp.com/api/citations?password=${encodeURIComponent(password)}`, {
-                method: 'GET',
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Unauthorized access or error fetching data.');
-                }
-                return response.json();
-            })
-            .then(data => {
-                const listDiv = document.getElementById("list");
-                // Clear the existing content
-                listDiv.innerHTML = "<h2>Citations:</h2>"; 
-                data.forEach(citation => {
-                    // Create a new div for each citation
-                    const citationDiv = document.createElement("div");
-                    citationDiv.classList.add("citation");
-                    citationDiv.innerHTML = `
-                        <p><strong>Citation Number:</strong> ${citation.citationNumber}</p>
-                        <p><strong>Time Occurred:</strong> ${citation.timeOccurred}</p>
-                        <p><strong>Location:</strong> ${citation.locationOccurred}</p>
-                        <p><strong>License Plate:</strong> ${citation.licensePlate}</p>
-                    `;
-                    listDiv.appendChild(citationDiv);
-                });
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Unauthorized access or error fetching data.');
-            });
-        });
-		
-		
     </script>
 </body>
 </html>

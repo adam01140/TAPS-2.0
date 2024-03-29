@@ -11,38 +11,25 @@ app.use(express.static(path.join(__dirname))); // Serve static files
 
 let citations = []; // In-memory storage for citations
 
-
-
-
-
 // POST endpoint to add a citation
 app.post('/api/citations', (req, res) => {
-    const { citationNumber, timeOccurred, locationOccurred, licensePlate } = req.body;
+    const { licensePlate } = req.body;
     
-    // Basic validation
-    if (!licensePlate || !citationNumber || !timeOccurred || !locationOccurred) {
-        return res.status(400).send('Missing required citation details in request body');
+    if (!licensePlate) {
+        return res.status(400).send('Missing license plate in request body');
     }
     
-    const newCitation = { 
-        citationNumber, 
-        timeOccurred, 
-        locationOccurred, 
-        licensePlate, 
-        timestamp: new Date().toISOString() 
-    };
+    const newCitation = { licensePlate, timestamp: new Date().toISOString() };
     citations.push(newCitation); // Add the new citation
     res.status(201).json(newCitation);
 });
-
-
 
 // GET endpoint to fetch all citations
 app.get('/api/citations', (req, res) => {
     const { password } = req.query; // Expect password to be sent as a query parameter
     
     // Check if the password is correct
-    if (password !== 'q') {
+    if (password !== 'N@vy0114') {
         // If the password is incorrect, respond with an unauthorized status code and message
         return res.status(401).json({ message: 'Unauthorized: Incorrect password' });
     }
