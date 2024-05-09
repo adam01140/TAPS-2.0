@@ -49,7 +49,7 @@
             const locationOccurred = document.getElementById("locationOccurred").value;
             const licensePlate = document.getElementById("licensePlate").value;
             
-            fetch('https://thawing-bayou-15449-25148cb91854.herokuapp.com/api/citations', {
+            fetch('https://taps-2-0.onrender.com/api/citations', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -76,7 +76,7 @@
 				
 				
             const password = prompt("Please enter the password:");
-            fetch(`https://thawing-bayou-15449-25148cb91854.herokuapp.com/api/citations?password=${encodeURIComponent(password)}`, {
+            fetch(`https://taps-2-0.onrender.com/api/citations?password=${encodeURIComponent(password)}`, {
                 method: 'GET',
             })
             .then(response => {
@@ -105,7 +105,7 @@
 		
 		document.getElementById("fetchCitations").addEventListener("click", function() {
             const password = prompt("Please enter the password:");
-            fetch(`https://thawing-bayou-15449-25148cb91854.herokuapp.com/api/citations?password=${encodeURIComponent(password)}`)
+            fetch(`https://taps-2-0.onrender.com/api/citations?password=${encodeURIComponent(password)}`)
             .then(response => {
                 if (!response.ok) throw new Error('Unauthorized access or error fetching data.');
                 return response.json();
