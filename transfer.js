@@ -10,7 +10,7 @@ admin.initializeApp({
 const db = admin.firestore();
 
 // Heroku endpoint to post citations
-const HEROKU_URL = 'https://thawing-bayou-15449-25148cb91854.herokuapp.com/api/citations';
+const HEROKU_URL = 'https://taps-2-0.onrender.com/api/citations';
 
 async function transferData() {
   // Dynamically import node-fetch
