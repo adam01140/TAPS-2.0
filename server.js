@@ -2,10 +2,19 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const multer = require('multer');
-const csvParse = require('csv-parse'); // Import csv-parse
+const csvParse = require('csv-parse');
+const admin = require('firebase-admin');
+const fetch = require('node-fetch'); // Make sure node-fetch is installed
 
 const app = express();
 const PORT = process.env.PORT || 8080;
+
+// Initialize Firebase Admin SDK
+const serviceAccount = require('./transfer.json');
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+const db = admin.firestore();
 
 // Setup multer for file storage in memory
 const storage = multer.memoryStorage();
@@ -16,6 +25,36 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
 let citations = [];
+
+async function transferData() {
+  const snapshot = await db.collection('citations').get();
+  snapshot.forEach(async (doc) => {
+    const citationData = doc.data();
+    const dateTimeISO = `${citationData.timestamp.split('/').reverse().join('-')}T${citationData.time.slice(0, 2)}:${citationData.time.slice(2, 4)}:00Z`;
+    const postData = {
+      citationNumber: citationData.citationNumber || 'Unavailable',
+      timeOccurred: dateTimeISO,
+      locationOccurred: citationData.college || 'Unavailable',
+      licensePlate: citationData.licensePlate || 'Unavailable',
+    };
+    try {
+      const response = await fetch('https://taps-2-0.onrender.com/api/citations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(postData),
+      });
+      const responseData = await response.json();
+      console.log('Successfully transferred citation data:', responseData);
+    } catch (error) {
+      console.error('Error transferring citation data:', error);
+    }
+  });
+}
+
+// Run transferData on server start
+transferData();
 
 app.post('/api/citations', (req, res) => {
     const { citationNumber, timeOccurred, locationOccurred, licensePlate } = req.body;
@@ -48,13 +87,11 @@ app.delete('/api/citations/:citationNumber', (req, res) => {
     res.status(200).send('Citation deleted successfully');
 });
 
-// Endpoint to handle CSV file uploads and process CSV data
 app.post('/api/upload-csv', upload.single('file'), (req, res) => {
     if (!req.file) {
         return res.status(400).send('No file uploaded');
     }
 
-    // Parse the CSV data
     csvParse(req.file.buffer, {
         columns: true,
         trim: true
@@ -62,8 +99,6 @@ app.post('/api/upload-csv', upload.single('file'), (req, res) => {
         if (err) {
             return res.status(500).send('Error parsing CSV data');
         }
-
-        // Process each record into the citations array
         records.forEach(record => {
             citations.push({
                 citationNumber: record.citationNumber || "Unavailable",
@@ -73,7 +108,6 @@ app.post('/api/upload-csv', upload.single('file'), (req, res) => {
                 timestamp: new Date().toISOString()
             });
         });
-
         res.send(`Processed ${records.length} citations from CSV`);
     });
 });
