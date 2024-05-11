@@ -38,8 +38,12 @@
     </div>
 	
 	<button id="downloadCSV">Download CSV</button>
-        <input type="file" id="uploadCSV" accept=".csv">
-        <button id="submitCSV">Upload CSV</button>
+        
+		<input type="file" id="uploadCSV" accept=".csv">
+<button id="submitCSV">Upload CSV</button>
+
+
+
     <script>
 	
 	
@@ -80,28 +84,34 @@
 });
 
 
-        document.getElementById("submitCSV").addEventListener("click", function() {
-            const file = document.getElementById("uploadCSV").files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    fetch('https://taps-2-0.onrender.com/api/upload-csv', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'text/csv',
-                        },
-                        body: event.target.result
-                    })
-                    .then(response => response.text())
-                    .then(data => {
-                        console.log('CSV uploaded and processed:', data);
-                    })
-                    .catch(error => console.error('Error uploading CSV:', error));
-                };
-                reader.readAsText(file);
+       document.getElementById("submitCSV").addEventListener("click", function() {
+    const file = document.getElementById("uploadCSV").files[0];
+    if (file) {
+        const formData = new FormData();
+        formData.append('file', file); // 'file' is the key expected by multer on the server
+
+        fetch('https://taps-2-0.onrender.com/api/upload-csv', {
+            method: 'POST',
+            body: formData, // send the form data
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to upload CSV.');
             }
+            return response.text();
+        })
+        .then(data => {
+            console.log('CSV uploaded and processed:', data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert(error.message);
         });
-		
+    } else {
+        alert('Please select a file to upload.');
+    }
+});
+
 		
 	
 	
