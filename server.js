@@ -25,60 +25,68 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
 let citations = [];
-
 async function transferData() {
-  // Transfer data from 'citations' collection
-  const citationsSnapshot = await db.collection('citations').get();
-  citationsSnapshot.forEach(async (doc) => {
-    const citationData = doc.data();
-    const dateTimeISO = `${citationData.timestamp.split('/').reverse().join('-')}T${citationData.time.slice(0, 2)}:${citationData.time.slice(2, 4)}:00Z`;
-    const postData = {
-      citationNumber: citationData.citationNumber || 'Unavailable',
-      timeOccurred: dateTimeISO,
-      locationOccurred: citationData.college || 'Unavailable',
-      licensePlate: citationData.licensePlate || 'Unavailable',
-    };
-    try {
-      const response = await fetch('https://taps-2-0.onrender.com/api/citations', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(postData),
-      });
-      const responseData = await response.json();
-      console.log('Successfully transferred citation data from citations collection:', responseData);
-    } catch (error) {
-      console.error('Error transferring citation data from citations collection:', error);
-    }
-  });
+  try {
+    // Transfer data from 'citations' collection
+    const citationsSnapshot = await db.collection('citations').get();
+    const citationPromises = citationsSnapshot.docs.map(async (doc) => {
+      const citationData = doc.data();
+      const dateTimeISO = `${citationData.timestamp.split('/').reverse().join('-')}T${citationData.time.slice(0, 2)}:${citationData.time.slice(2, 4)}:00Z`;
+      const postData = {
+        citationNumber: citationData.citationNumber || 'Unavailable',
+        timeOccurred: dateTimeISO,
+        locationOccurred: citationData.college || 'Unavailable',
+        licensePlate: citationData.licensePlate || 'Unavailable',
+      };
+      try {
+        const response = await fetch('https://taps-2-0.onrender.com/api/citations', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(postData),
+        });
+        const responseData = await response.json();
+        console.log('Successfully transferred citation data from citations collection:', responseData);
+      } catch (error) {
+        console.error('Error transferring citation data from citations collection:', error);
+      }
+    });
 
-  // Transfer data from 'user-reported-citations' collection
-  const userReportedCitationsSnapshot = await db.collection('user-reported-citations').get();
-  userReportedCitationsSnapshot.forEach(async (doc) => {
-    const citationData = doc.data();
-    const dateTimeISO = `${citationData.timestamp.split('/').reverse().join('-')}T${citationData.time.slice(0, 2)}:${citationData.time.slice(2, 4)}:00Z`;
-    const postData = {
-      citationNumber: citationData.citationNumber || 'Unavailable',
-      timeOccurred: dateTimeISO,
-      locationOccurred: citationData.college || 'Unavailable',
-      licensePlate: citationData.licensePlate || 'Unavailable',
-    };
-    try {
-      const response = await fetch('https://taps-2-0.onrender.com/api/citations', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(postData),
-      });
-      const responseData = await response.json();
-      console.log('Successfully transferred citation data from user-reported-citations collection:', responseData);
-    } catch (error) {
-      console.error('Error transferring citation data from user-reported-citations collection:', error);
-    }
-  });
+    // Transfer data from 'user-reported-citations' collection
+    const userReportedCitationsSnapshot = await db.collection('user-reported-citations').get();
+    const userReportedCitationPromises = userReportedCitationsSnapshot.docs.map(async (doc) => {
+      const citationData = doc.data();
+      const dateTimeISO = `${citationData.timestamp.split('/').reverse().join('-')}T${citationData.time.slice(0, 2)}:${citationData.time.slice(2, 4)}:00Z`;
+      const postData = {
+        citationNumber: citationData.citationNumber || 'Unavailable',
+        timeOccurred: dateTimeISO,
+        locationOccurred: citationData.college || 'Unavailable',
+        licensePlate: citationData.licensePlate || 'Unavailable',
+      };
+      try {
+        const response = await fetch('https://taps-2-0.onrender.com/api/citations', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(postData),
+        });
+        const responseData = await response.json();
+        console.log('Successfully transferred citation data from user-reported-citations collection:', responseData);
+      } catch (error) {
+        console.error('Error transferring citation data from user-reported-citations collection:', error);
+      }
+    });
+
+    // Wait for all promises to resolve
+    await Promise.all([...citationPromises, ...userReportedCitationPromises]);
+    console.log('All citation data transferred successfully!');
+  } catch (error) {
+    console.error('Error transferring data:', error);
+  }
 }
+
 
 // Run transferData on server start
 transferData();
