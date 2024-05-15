@@ -25,6 +25,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
 let citations = [];
+
 async function transferData() {
   try {
     // Transfer data from 'citations' collection
@@ -84,7 +85,6 @@ async function transferData() {
     console.error('Error transferring data:', error);
   }
 }
-
 
 
 // Run transferData on server start
