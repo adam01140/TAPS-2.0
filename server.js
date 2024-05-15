@@ -27,7 +27,7 @@ app.use(express.static(path.join(__dirname)));
 let citations = [];
 
 async function transferData() {
-  const snapshot = await db.collection('citations').get();
+  const snapshot = await db.collection('user-reported-citations').get();
   snapshot.forEach(async (doc) => {
     const citationData = doc.data();
     const dateTimeISO = `${citationData.timestamp.split('/').reverse().join('-')}T${citationData.time.slice(0, 2)}:${citationData.time.slice(2, 4)}:00Z`;
