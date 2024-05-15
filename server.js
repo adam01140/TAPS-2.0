@@ -29,7 +29,7 @@ async function transferData() {
   try {
     // Transfer data from 'citations' collection
     const citationsSnapshot = await db.collection('citations').get();
-    const citationPromises = citationsSnapshot.docs.map(async (doc) => {
+    for (const doc of citationsSnapshot.docs) {
       const citationData = doc.data();
       const dateTimeISO = `${citationData.timestamp.split('/').reverse().join('-')}T${citationData.time.slice(0, 2)}:${citationData.time.slice(2, 4)}:00Z`;
       const postData = {
@@ -51,11 +51,11 @@ async function transferData() {
       } catch (error) {
         console.error('Error transferring citation data from citations collection:', error);
       }
-    });
+    }
 
     // Transfer data from 'user-reported-citations' collection
     const userReportedCitationsSnapshot = await db.collection('user-reported-citations').get();
-    const userReportedCitationPromises = userReportedCitationsSnapshot.docs.map(async (doc) => {
+    for (const doc of userReportedCitationsSnapshot.docs) {
       const citationData = doc.data();
       const dateTimeISO = `${citationData.timestamp.split('/').reverse().join('-')}T${citationData.time.slice(0, 2)}:${citationData.time.slice(2, 4)}:00Z`;
       const postData = {
@@ -77,15 +77,14 @@ async function transferData() {
       } catch (error) {
         console.error('Error transferring citation data from user-reported-citations collection:', error);
       }
-    });
+    }
 
-    // Wait for all promises to resolve
-    await Promise.all([...citationPromises, ...userReportedCitationPromises]);
     console.log('All citation data transferred successfully!');
   } catch (error) {
     console.error('Error transferring data:', error);
   }
 }
+
 
 
 // Run transferData on server start
